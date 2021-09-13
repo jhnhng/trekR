@@ -1,3 +1,12 @@
+#' Process UD raster to calculate EMD
+#'
+#' @param r1 is a RasterLayer representing a rasterized UD.
+#' @param r2 is a RasterLayer representing a rasterized UD.
+#'
+#' @return Function calculates EMD between r1 and r2 in geographic space.
+#'
+
+
 ##################################################################### X
 #----Process UD raster to calculate EMD with package 'transport'-----X
 #---------------------------Brian J. Smith---------------------------X
@@ -14,6 +23,7 @@
 # Function calculates EMD between r1 and r2 in geographic
 # space.
 
+#' @export
 emd_geo <- function(r1, r2) {
 
   # Check r1 and r2

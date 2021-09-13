@@ -1,12 +1,17 @@
-# Function arguments #
+#' Function arguments #
 
-# emd: either the between time frame (e.g., winter season to the summer season)
-# emd or the within-time frame (e.g., first 10-days to the second 10-days) emd
+#' @param emd Either the between time frame (e.g., winter season to the summer season)
+#'  emd or the within-time frame (e.g., first 10-days to the second 10-days) emd
+#' @param t1 First list of data frames, where each element represents an interval
+#'  or time frame (e.g., first 10-day period to second 10-day period or
+#'  winter to summer)
+#' @param t2 Second list of data frames, where each element represents an interval or
+#'  time frame (e.g., first 10-day period to second 10-day period or winter to
+#'  summer)
+#'
+#'  @returns Matrices of the emspeeds (EMDs/Difference between the two)
 
-# t1 and t2: list of data frames, where each element represents an interval or
-# time frame (e.g., first 10-day period to second 10-day period or winter to
-# summer)
-
+#' @export
 emspeeds <- function(t1, t2, emd) {
 
   # Vector of integers using the length of the interval list
@@ -30,8 +35,8 @@ emspeeds <- function(t1, t2, emd) {
   # the first 10-days is compared to the first10-days, the second 10-days, the
   # third 10-days. The second to the first 10-days,  the second, and to the
   # the third 10-days, etc.)
-  lstMat <- map2(split(t1, g1), split(t2, g1), f1)
-  es <- map2(emd, lstMat, `/`)
+  lstMat <- purrr::map2(split(t1, g1), split(t2, g1), f1)
+  es <- purrr::map2(emd, lstMat, `/`)
 
   # All NAs are converted to 0
   if (all(!is.na(es))) {

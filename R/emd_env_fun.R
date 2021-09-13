@@ -1,3 +1,19 @@
+#' Process UD raster to calculate EMD with pacakge 'transport'
+#'
+#' @param rs1 A RasterStack with two layers: (1) the rasterized UD and (2) the
+#'   values of the environmental covariate.
+#' @param rs2 A RasterStack with two layers: (1) the rasterized UD and (2) the
+#'    values of the environmental covariate.
+#' @param nbins a numeric vector of length == 1 giving the number of bins to
+#'    discretize environmental space into. Will create a sequence from
+#'    the min -- max environmental values (from both ranges combined).
+#'    Defaults to 50.
+#'
+#' @return EMD between rs1 and rs2 in one dimension of environmental space.
+#'
+
+
+
 ##################################################################### X
 #----Process UD raster to calculate EMD with package 'transport'-----X
 #---------------------------Brian J. Smith---------------------------X
@@ -20,6 +36,7 @@
 # Function calculates EMD between rs1 and rs2 in one dimension of environmental
 # space.
 
+#' @export
 emd_env <- function(rs1, rs2, nbins = 50) {
 
   # Check rs1 and rs2

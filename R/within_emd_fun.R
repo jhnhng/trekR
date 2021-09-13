@@ -1,6 +1,15 @@
+#' Calculates the Earth-Mover's Distance (EMD) within the same range
+#'
+#' @param t List of rasters containing the raster for each period within the
+#   specified interval.
+#' @param nintervals The length that the rasters are broken up into by the
+#'  specified interval.
+#'
+#' @return The output is a list of matrices that contain the within- range EMDs
+
+#' @export
 # Calculates the geographical emd within a timeframe
-#  t: list of rasters containing the raster for each period within the
-# specified interval (e.g., 10-days)
+#  t:
 # nintervals: the number that the timeframe is dividing into (e.g., within a
 # 10-day interval for a single month the time frame is divided into '3' weeks)
 within_emd <- function(t, nintervals) {
