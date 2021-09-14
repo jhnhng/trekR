@@ -2,7 +2,7 @@
 
 The aim of `trekR` is to classify whether an individual is a migrant or not within a given year.  
 
-# Install
+## Installation
 To install the current development version of `trekR` use:
 `devtools::install_github("jhnhng/trekR")`
 
