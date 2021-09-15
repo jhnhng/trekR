@@ -21,7 +21,9 @@ Imports:
   sp,
   transport,
   sf,
-  methods
+  methods,
+  purrr, 
+  utils
 Suggests: 
     rmarkdown,
     knitr

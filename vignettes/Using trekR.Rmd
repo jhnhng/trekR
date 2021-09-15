@@ -18,7 +18,7 @@ knitr::opts_chunk$set(
 
 
 
-```{r results='hide'}
+```{r message = FALSE}
 library(trekR)
 library(lubridate)
 library(dplyr)
@@ -51,11 +51,11 @@ jan <- unicorns %>%
   # For any months that has 31 days, the 31st day would normally be assigned its 
   # own interval. The code below takes the 31st day and joins it with the 
   # previous interval. 
-  group_by(ID) %>% # Included if more than a single individual is included
+  group_by(ID) %>% 
   mutate(new = if_else(day(new) == 31, new - days(10), new)) %>% 
   group_by(new, .add = TRUE) %>%
   # Filter the data by the season based on the `season_categ` column
-  filter(Month == "1") %>% 
+  filter(month == "1") %>% 
   group_split()
 ```
 
@@ -69,11 +69,11 @@ july <- unicorns %>%
   # For any months that has 31 days, the 31st day would normally be assigned its 
   # own interval. The code below takes the 31st day and joins it with the 
   # previous interval. 
-  group_by(ID) %>% # Included if more than a single individual is included
+  group_by(ID) %>% 
   mutate(new = if_else(day(new) == 31, new - days(10), new)) %>% 
   group_by(new, .add = TRUE) %>%
   # Filter the data by the season based on the `season_categ` column
-  filter(Month == "7") %>% 
+  filter(month == "7") %>% 
   group_split()
 
 ```
