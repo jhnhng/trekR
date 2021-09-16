@@ -5,6 +5,9 @@
 #'
 #' @return Function calculates EMD between r1 and r2 in geographic space.
 #'
+#'@importFrom sp coordinates
+#'@importFrom raster values
+#'@importFrom transport wpp wasserstein
 
 
 ##################################################################### X
@@ -36,12 +39,12 @@ emd_geo <- function(r1, r2) {
   }
 
   # Matrix of coordinates
-  coord1 <- sp::coordinates(r1)
-  coord2 <- sp::coordinates(r2)
+  coord1 <- coordinates(r1)
+  coord2 <- coordinates(r2)
 
   # Vector of masses (UD values)
-  mass1 <- raster::values(r1)
-  mass2 <- raster::values(r2)
+  mass1 <- values(r1)
+  mass2 <- values(r2)
 
   # Cannot have NAs in the raster (UD should be 0)
   mass1[is.na(mass1)] <- 0
@@ -53,17 +56,17 @@ emd_geo <- function(r1, r2) {
   mass2 <- mass2 / sum(mass2)
 
   # Create wpp objects
-  wpp1 <- transport::wpp(
+  wpp1 <- wpp(
     coordinates = coord1,
     mass = mass1
   )
-  wpp2 <- transport::wpp(
+  wpp2 <- wpp(
     coordinates = coord2,
     mass = mass2
   )
 
   # Calculate EMD in geographic space
-  res <- transport::wasserstein(a = wpp1, b = wpp2)
+  res <- wasserstein(a = wpp1, b = wpp2)
 
   # Return
   return(res)
