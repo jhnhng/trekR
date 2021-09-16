@@ -27,10 +27,10 @@ library(dplyr)
 ## Data set
 The `unicorn` data set contains GPS data (in UTMs) for a single individual in Utah. 
 ```{r data }
-unicorns <- trekR:::unicorns
-head(unicorns)
+data(deer)
+head(deer)
 
-str(unicorns)
+str(deer)
 ```
 
 ## Setting Up the Data
@@ -39,11 +39,11 @@ The example shown below is one of many ways the data could be processed. The imp
 For example, for a single individual if I wanted to break a one month period into 10-day intervals I would get a total of three 10-day intervals. These intervals should be in a `list` object, and each element within the `list` should represent a single interval. 
 
 ### Create intervals
-We created 10-day intervals for unicorns in the January and July. We first created a `new` column using the `floor_Date()` function to obtain the 10-day extents within the months. We included the 31st day (if a month had 31 days) in the third 10-day interval to prevent the creation of a 4th 10-day interval with only a single day in it.   
+We created 10-day intervals for deer in the January and July. We first created a `new` column using the `floor_Date()` function to obtain the 10-day extents within the months. We included the 31st day (if a month had 31 days) in the third 10-day interval to prevent the creation of a 4th 10-day interval with only a single day in it.   
 
 ### Intervals for January
 ```{r Jan Intervals}
-jan <- unicorns %>%
+jan <- deer %>%
   # Creates a new column assigning the first day in the 10-day interval in which
   # the date falls under (e.g., 01-03-2021 would be in the first 10-day interval
   # so the `floor_date` assigned to it would be 01-01-2021)
@@ -61,7 +61,7 @@ jan <- unicorns %>%
 
 ### Intervals for July
 ```{r July Intervals}
-july <- unicorns %>%
+july <- deer %>%
   # Creates a new column assigning the first day in the 10-day interval in which
   # the date falls under (e.g., 01-03-2021 would be in the first 10-day interval
   # so the `floor_date` assigned to it would be 01-01-2021)
