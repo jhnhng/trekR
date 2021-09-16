@@ -1,6 +1,6 @@
 ---
 title: "Using trekR"
-output: rmarkdown::html_document
+output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{Using trekR}
   %\VignetteEngine{knitr::rmarkdown}
