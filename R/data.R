@@ -1,3 +1,6 @@
+  NULL
+#'
+#'
 #' Deer in Utah
 #'
 #' A dataset containing GPS data for three collared-individuals in Utah
@@ -12,4 +15,4 @@
 #'    \item{jDate}{Dates within the julian calendar}
 #'}
 #'
-#'"deer"
+  "deer"

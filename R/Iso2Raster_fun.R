@@ -7,7 +7,7 @@
 #'  interval time frame.
 #'
 #' @importFrom utils setTxtProgressBar txtProgressBar
-#' @importFrom raster raster rasterize values cellStats
+#' @importFrom raster raster rasterize getValues cellStats
 
 #' @export
 iso2raster <- function(isopleth, resolution) {
