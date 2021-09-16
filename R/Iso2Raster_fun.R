@@ -9,7 +9,7 @@
 #' @importFrom utils setTxtProgressBar txtProgressBar
 #' @importFrom raster raster rasterize values cellStats
 
-#' @export
+#'
 iso2raster <- function(isopleth, resolution) {
   # Creates empty list
   template_raster <- vector("list", length(isopleth))
