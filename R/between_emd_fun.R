@@ -13,6 +13,7 @@
 #' @export
 # t1 and t2 refer to the time frames that the emd is being calculated for.
 between_emd <- function(t1, t2, nintervals) {
+  if (length(t1) == length(t2)){
   # Applies the 'emd_geo' function on the intervals for the two time frames.
   # e.g., let's say the two frames are winter and summer, and each season is
   # dividing into 10-day intervals. The function applies 'emd_geo' between the
@@ -33,4 +34,8 @@ between_emd <- function(t1, t2, nintervals) {
     split(t2, ceiling(seq_along(t2) / nintervals)) # nintervals is 3 in
     # the example.
   )
+  } else {
+    stop("lengths of t1 must equal t2")
+  }
+
 }
