@@ -14,10 +14,6 @@
 #' @export
 emspeeds <- function(t1, t2, emd) {
 
-  # Vector of integers using the length of the interval list
-  # The intervals refer the the number of days that the data set was broken up
-  g1 <- as.integer(gl(length(t1), 3, length(t2)))
-
   # Function to calculate the number of julian dates between the first date in the
   # first interval and the first date of the second interval
   f1 <- function(.int1, .int2) {
@@ -35,7 +31,7 @@ emspeeds <- function(t1, t2, emd) {
   # the first 10-days is compared to the first10-days, the second 10-days, the
   # third 10-days. The second to the first 10-days,  the second, and to the
   # the third 10-days, etc.)
-  lstMat <- purrr::map2(split(t1, g1), split(t2, g1), f1)
+  lstMat <- purrr::map2(split(t1, names(t1)), split(t2, names(t2)), f1)
   es <- purrr::map2(emd, lstMat, `/`)
 
   # All NAs are converted to 0
