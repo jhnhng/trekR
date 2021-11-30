@@ -19,7 +19,7 @@ between_emd <- function(t1, t2) {
     # first 10-day interval of summer to the first, second, and third 10-day intervals
     # of winter. This is repeated for the second 10-day interval, and the
     # third 10-day interval of summer.
-    id <- lapply(list(t1, t2),\(x)split(unlist(x), names(x)));
+    id <- lapply(list(t1, t2),function(x)split(unlist(x), names(x)));
 
     Map(
       function(x, y) {

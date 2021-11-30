@@ -13,7 +13,7 @@
 # nintervals: the number that the timeframe is dividing into (e.g., within a
 # 10-day interval for a single month the time frame is divided into '3' weeks)
 within_emd <- function(t) {
-  id <- lapply(list(t),\(x)split(unlist(x), names(x)));
+  id <- lapply(list(t),function(x)split(unlist(x), names(x)));
   Map(
     function(subl1) {
       outer(unlist(subl1), unlist(subl1),
