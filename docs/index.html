@@ -36,7 +36,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="index.html">trekR</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.0.0.9000</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.0.1.0000</span>
       </span>
     </div>
 
@@ -53,9 +53,15 @@
   </a>
   <ul class="dropdown-menu" role="menu">
 <li>
-      <a href="articles/Using-trekR.html">Using trekR</a>
+      <a href="articles/Setting%20Up%20the%20Data.html">Setting Up the Data</a>
+    </li>
+    <li>
+      <a href="articles/Using-trekR.html">Using the functions in `trekR`</a>
     </li>
   </ul>
+</li>
+<li>
+  <a href="news/index.html">Changelog</a>
 </li>
       </ul>
 <ul class="nav navbar-nav navbar-right"></ul>
@@ -70,13 +76,22 @@
 
       </header><div class="row">
   <div class="contents col-md-9">
-<div id="trekr-migration-classifier" class="section level1">
-<div class="page-header"><h1 class="hasAnchor">
-<a href="#trekr-migration-classifier" class="anchor" aria-hidden="true"></a>trekR (Migration Classifier)</h1></div>
-<p>The aim of <code>trekR</code> is to classify whether an individual is a migrant or not within a given year.</p>
-<div id="installation" class="section level2">
-<h2 class="hasAnchor">
-<a href="#installation" class="anchor" aria-hidden="true"></a>Installation</h2>
+<div class="section level1">
+<div class="page-header"><h1 id="trekr-migration-classifier">trekR (Migration Classifier)<a class="anchor" aria-label="anchor" href="#trekr-migration-classifier"></a>
+</h1></div>
+<p>The aim of <code>trekR</code> is to automate the classification of individuals, as a migrant or non-migrant, across a continuous scale. I would recommend first looking over the article “Setting Up the Data”” under the articles tab, before looking at how to use the functions in the <code>trekR</code> package shown under “Using the functions in <code>trekR</code>”.</p>
+<p>To accomplish this:</p>
+<ol style="list-style-type: decimal">
+<li><p>The collected movement data must first be segmented into the specified time periods (e.g., seasons, months, weeks, days).</p></li>
+<li><p>The segmented time periods are further broken down into specific intervals (e.g., a month can be broken down into weeks or a week can be broken down into days).</p></li>
+<li><p>Fit and rasterize a home range for each interval from step 2. The output from this step should yield at least two utilization distributions (UD) that you will then use in step 4.</p></li>
+<li><p>Calculate the Earth Mover’s Distance (EMD) between two UDs created from step 3. The EMD is expected to be larger for migrants compared to residents.</p></li>
+<li><p>Calculate “EM-Speeds” by dividing each EMD by the time elapsed between the two UDs.</p></li>
+<li><p>Calculate the average within- one specified period from step 1, and between- different periods. The ratios between these two different averages yields a unitless value that will indicate where an individual is on the migratory spectrum.</p></li>
+</ol>
+<div class="section level2">
+<h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
+</h2>
 <p>To install the current development version of <code>trekR</code> use: <code>devtools::install_github("jhnhng/trekR")</code></p>
 </div>
 </div>
@@ -92,10 +107,17 @@
 </div>
 
 
+<div class="citation">
+<h2 data-toc-skip>Citation</h2>
+<ul class="list-unstyled">
+<li><a href="authors.html#citation">Citing trekR</a></li>
+</ul>
+</div>
+
 <div class="developers">
 <h2 data-toc-skip>Developers</h2>
 <ul class="list-unstyled">
-<li>John Huang <br><small class="roles"> Author, maintainer </small> <a href="https://orcid.org/YOUR-ORCID-ID" target="orcid.widget" aria-label="ORCID"><span class="fab fa-orcid orcid" aria-hidden="true"></span></a> </li>
+<li>John Huang <br><small class="roles"> Author, maintainer </small> <a href="https://orcid.org/YOUR-ORCID-ID" target="orcid.widget" aria-label="ORCID" class="external-link"><span class="fab fa-orcid orcid" aria-hidden="true"></span></a> </li>
 </ul>
 </div>
 
@@ -112,7 +134,7 @@
 
 <div class="pkgdown">
   <p></p>
-<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 1.6.1.9001.</p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.0.</p>
 </div>
 
       </footer>

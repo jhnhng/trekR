@@ -1,7 +1,8 @@
-pandoc: 2.11.4
-pkgdown: 1.6.1.9001
-pkgdown_sha: 705ff7c650bb1c7d46d35e72f27ad093689e2f29
+pandoc: 2.14.0.3
+pkgdown: 2.0.0
+pkgdown_sha: ~
 articles:
+  Setting Up the Data: Setting Up the Data.html
   Using-trekR: Using-trekR.html
-last_built: 2021-09-16T23:15Z
+last_built: 2021-12-01T01:28Z
 

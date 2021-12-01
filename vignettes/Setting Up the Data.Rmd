@@ -1,0 +1,236 @@
+---
+title: "Setting Up the Data"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Setting Up the Data}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+
+```
+
+```{r message = FALSE}
+library(trekR)
+library(lubridate)
+library(dplyr)
+library(tibble)
+```
+
+## Setting Up the Data
+The example shown below is one of many ways the data could be processed. The important components required is a `list` object containing home range kernels for each interval that is created for at least one individual. 
+
+For example, for a single individual if I wanted to break a one month period into 10-day intervals I would get a total of three 10-day intervals. These intervals should be in a `list` object, and each element within the `list` should represent a single interval. 
+
+### Create Intervals
+We created 10-day intervals for deer in the January and July. We first created a `new` column using the `floor_Date()` function to obtain the 10-day extents within the months. We included the 31st day (if a month had 31 days) in the third 10-day interval to prevent the creation of a 4th 10-day interval with only a single day in it.   
+
+### Intervals for January
+```{r Jan Intervals}
+jan <- deer %>%
+  # Creates a new column assigning the first day in the 10-day interval in which
+  # the date falls under (e.g., 01-03-2021 would be in the first 10-day interval
+  # so the `floor_date` assigned to it would be 01-01-2021)
+  mutate(new = floor_date(date, "10 days")) %>%
+  # For any months that has 31 days, the 31st day would normally be assigned its 
+  # own interval. The code below takes the 31st day and joins it with the 
+  # previous interval. 
+  group_by(ID) %>% 
+  mutate(new = if_else(day(new) == 31, new - days(10), new)) %>% 
+  group_by(new, .add = TRUE) %>%
+  # Filter the data by the season based on the `season_categ` column
+  filter(month == "1") %>% 
+  group_split()
+```
+
+### Intervals for July
+```{r July Intervals}
+july <- deer %>%
+  # Creates a new column assigning the first day in the 10-day interval in which
+  # the date falls under (e.g., 01-03-2021 would be in the first 10-day interval
+  # so the `floor_date` assigned to it would be 01-01-2021)
+  mutate(new = floor_date(date, "10 days")) %>%
+  # For any months that has 31 days, the 31st day would normally be assigned its 
+  # own interval. The code below takes the 31st day and joins it with the 
+  # previous interval. 
+  group_by(ID) %>% 
+  mutate(new = if_else(day(new) == 31, new - days(10), new)) %>% 
+  group_by(new, .add = TRUE) %>%
+  # Filter the data by the season based on the `season_categ` column
+  filter(month == "7") %>% 
+  group_split()
+
+```
+
+Elements in the list for one individual in January:
+```{r}
+head(jan[1:3])
+```
+
+
+## Create Tracks for Each Interval
+Before we estimate LoCoH home range for each of these 10-day intervals, we first create objects of class `track_xyt` using `make_track()` from the `amt` package. This function creates a `track` using the `utm_x` and `utm_y` columns from `jan` and `july`. `lapply()` allows us to apply the specified function across a `list` object (e.g., `jan` and `july`)
+
+``` {r tracks, message = FALSE}
+track_list_sum <- lapply(jan, function(x) {
+  amt::make_track(tbl = x, .x = utm_x, .y = utm_y, .t = date,
+             uid = ID,
+             # lat/long: 4326 (lat/long, WGS84 datum).
+             # utm: crs = sp::CRS("+init=epsg:32612"))
+             crs = 32612)
+})
+track_list_win <- lapply(july, function(x) {
+  amt::make_track(tbl = x, .x = utm_x, .y = utm_y, .t = date,
+             uid = ID,
+             crs = 32612)
+})
+
+
+```
+
+## Creates LoCoHs Using the Tracks 
+Using the `track` created for the `jan` and `july`, we estimate type "a" LoCoH home range using `hr_locoh()` from the `amt` package. If you would like to learn more about the arguments of this function please refer to `?amt::hr_locoh` for more details.  
+
+```{r LoCoHs}
+sum_locoh <- lapply(track_list_sum, function(tracks){
+    # Calculate LoCoH a*
+    dmat <- dist(tracks[, c("x_", "y_")])
+    a <- max(dmat)
+
+    # Fit LoCoH
+    locoh <- amt::hr_locoh(
+      x = tracks,
+      levels = seq(0.1, 1, by = 0.1),
+      keep.data = TRUE,
+      n = a,
+      type = "a",
+      rand_buffer = 1e-05
+    )
+    
+    
+})
+win_locoh <- lapply(track_list_win, function(tracks){
+    # Calculate LoCoH a*
+    dmat <- dist(tracks[, c("x_", "y_")])
+    a <- max(dmat)
+
+    # Fit LoCoH
+    locoh <- amt::hr_locoh(
+      x = tracks,
+      levels = seq(0.1, 1, by = 0.1),
+      keep.data = TRUE,
+      n = a,
+      type = "a",
+      rand_buffer = 1e-05
+    )
+    
+    
+})
+```
+
+## Creates Isopleths from the LoCoHs
+We then created isopleths from the LoCoH home range estimates using `hr_isopleths()`from the `amt` package. 
+```{r Isopleths}
+sum_iso <- lapply(sum_locoh, function(x){
+  amt::hr_isopleths(x)
+})
+win_iso <- lapply(win_locoh, function(x){
+  amt::hr_isopleths(x)
+})
+
+```
+
+## Rasterizes the Isopleths 
+After creating isopleths for each of the intervals, we have to rasterize them. Similar to the the previous functions, we use `lapply()` to apply our function across our `list` object. We first create a template raster with a resolution of "50" (keep in mind that the speed the isopleths are `rasterize()` will be dependent on the specified resolution, with time of processing increasing with smaller resolutions). The projection of the template raster will match that of the specified isopleth.
+
+After creating rasters for each interval, we then subtract all the isopleth values from, then normalize them. 
+```{r, results = "hide"}
+sum_raster <- lapply(sum_iso, function(iso){
+# Creates template raster
+    template_raster <- raster::raster(iso,
+      resolution = 50, vals = 0,
+      crs = sp::CRS(sf::st_crs(iso)[[2]])
+    )
+    # Rasterizes the isopleth
+    raster_locoh <- raster::rasterize(iso,
+      template_raster,
+      field = "level",
+      fun = "first"
+    )
+
+    # Now you want to subtract all the isopleth values from 1
+    raster::values(raster_locoh) <- 1 - raster::values(raster_locoh)
+
+    # Now normalize
+    x <- raster_locoh / raster::cellStats(raster_locoh, sum)
+})
+
+win_raster <- lapply(win_iso, function(iso){
+# Creates template raster
+    template_raster <- raster::raster(iso,   
+      resolution = 250, vals = 0,
+      crs = sp::CRS(sf::st_crs(iso)[[2]])
+    )
+    # Rasterizes the isopleth
+    raster_locoh <- raster::rasterize(iso,
+      template_raster,
+      field = "level",
+      fun = "first"
+    )
+
+    # Now you want to subtract all the isopleth values from 1
+    raster::values(raster_locoh) <- 1 - raster::values(raster_locoh)
+
+    # Now normalize
+    x <- raster_locoh / raster::cellStats(raster_locoh, sum)
+})
+```
+
+```{r}
+### Removing IDs that don't have all of the intervals ####
+# Removes any `AnimalID` that doesn't have three intervals in both the `jan` and
+# the `july` list.
+remove_component <- function(list1, list2) {
+
+  bad_id <- full_join(
+    enframe(table(names(list1)), "AnimalID", "list1"),
+    enframe(table(names(list2)), "AnimalID", "list2"),
+    by = "AnimalID") %>%
+    filter(list1 != list2) %>%
+    distinct(AnimalID) %>%
+    pull()
+
+  list(new_list1 = list1[which(!((names(list1) %in% bad_id)))],
+       new_list2 = list2[which(!((names(list2) %in% bad_id)))])
+
+}
+# Creates a single list consisting of both the "cleaned" `jan` and `july` list
+seasons <- remove_component(sum_raster, win_raster)
+win_sum <- remove_component(july, jan)
+```
+
+## Setting up input for Calculating EMDs in Environmental Space
+The data set up above have specifically focused on setting up the data for calculating EMDs in geographical space. The code below demonstrates how you can set up the data to calculate the EMDs in environmental space. 
+
+### Creating 'RasterStacks' to calculate EMD and 'EM-Speeds in Environmental Space
+
+We first import the environmental covariate file (e.g., DEM layer), then we re-project the extent from latitude and longitude to UTMs to match those of the home range rasters.
+```{r}
+  #Load raster
+  UtahDEM <- raster::raster(system.file("extdata", "Utah_DEM.tif", package = "trekR"))
+  out_proj <- "+proj=utm +zone=12 +datum=WGS84 +units=m +no_defs +ellps=WGS84 +towgs84=0,0,0"
+  UtahDEM@extent <- raster::extent(raster::projectExtent(UtahDEM, out_proj))
+```
+
+The `env_raster_stack()` function takes the environmental covariate raster and resamples it to the home range rasters. It then takes the resampled rasters and the home range rasters and constructs a object with class `RasterStack`. The steps following the creation of these `RasterStacks` is the steps under "Earth Mover's Distance", where the `RasterLayers` objects (i.e., `sum_raster` and `win_raster`) are replaced with the `RasterStack` objects (i.e., `sum_rst` and `win_rst`). 
+
+```{r}
+sum_rst <- env_raster_stack(UtahDEM, sum_raster)
+win_rst <- env_raster_stack(UtahDEM, win_raster)
+
+```
