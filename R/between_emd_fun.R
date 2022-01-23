@@ -18,20 +18,33 @@ between_emd <- function(t1, t2) {
     # first 10-day interval of summer to the first, second, and third 10-day intervals
     # of winter. This is repeated for the second 10-day interval, and the
     # third 10-day interval of summer.
-    id <- lapply(list(t1, t2),function(x)split(unlist(x), names(x)));
+    id <- lapply(list(t1, t2),\(x)split(unlist(x), names(x)));
 
     Map(
-      function(x, y) {
-        outer(unlist(x), unlist(y), FUN = Vectorize(function(p, q) {
-          if (inherits(p, "RasterLayer")) {
-            emd_geo(p, q)
-          } else {
-            emd_env(p, q)
-          }
-        }))
-      },
-      split(id[[1]], ceiling(seq_along(id[[1]]))),
-      split(id[[2]], ceiling(seq_along(id[[2]])))
+    function(x, y) {
+      outer(unlist(x), unlist(y), FUN = Vectorize(function(p, q) {
+        res <- NA
+        if (inherits(p, "RasterLayer")) {
+          try({
+            res <- emd_geo(p, q)
+            return(res)
+          }, silent = TRUE)
+        } else {
+          try({
+            res <- emd_env(p, q)
+            return(res)
+          }, silent = TRUE)
+        }
+
+        if(is.na(res)){
+          warning("EMDs contain NAs")
+          Filter(Negate(is.null), res)
+        }
+      }))
+    },
+    split(id[[1]], ceiling(seq_along(id[[1]]))),
+    split(id[[2]], ceiling(seq_along(id[[2]])))
+
     )
 
 

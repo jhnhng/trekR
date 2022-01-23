@@ -9,23 +9,34 @@
 
 #' @export
 # Calculates the geographical emd within a timeframe
-#  t:
-# nintervals: the number that the timeframe is dividing into (e.g., within a
-# 10-day interval for a single month the time frame is divided into '3' weeks)
 within_emd <- function(t) {
-  id <- lapply(list(t),function(x)split(unlist(x), names(x)));
+  id <- lapply(list(t),\(x)split(unlist(x), names(x)));
+
   Map(
     function(subl1) {
       outer(unlist(subl1), unlist(subl1),
             FUN = Vectorize(function(x, y) {
+              res <- NA
               if (inherits(x, "RasterStack")) {
-                emd_env(x, y)
+                try({
+                  res <- emd_env(x, y)
+                  return(res)
+                }, silent = TRUE)
               } else {
-                emd_geo(x, y)
+                try({
+                  res <- emd_geo(x, y)
+                  return(res)
+                }, silent = TRUE)
+              }
+
+              if(is.na(res)){
+                warning("EMDs contain NAs")
+                Filter(Negate(is.null), res)
               }
             })
       )
     },
     split(id[[1]], ceiling(seq_along(id[[1]])))
   )
+
 }
