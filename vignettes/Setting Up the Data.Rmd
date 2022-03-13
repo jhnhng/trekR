@@ -77,14 +77,14 @@ head(jan[1:3])
 Before we estimate LoCoH home range for each of these 10-day intervals, we first create objects of class `track_xyt` using `make_track()` from the `amt` package. This function creates a `track` using the `utm_x` and `utm_y` columns from `jan` and `july`. `lapply()` allows us to apply the specified function across a `list` object (e.g., `jan` and `july`)
 
 ``` {r tracks, message = FALSE}
-track_list_sum <- lapply(jan, function(x) {
+track_list_sum <- lapply(july, function(x) {
   amt::make_track(tbl = x, .x = utm_x, .y = utm_y, .t = date,
              uid = ID,
              # lat/long: 4326 (lat/long, WGS84 datum).
              # utm: crs = sp::CRS("+init=epsg:32612"))
              crs = 32612)
 })
-track_list_win <- lapply(july, function(x) {
+track_list_win <- lapply(jan, function(x) {
   amt::make_track(tbl = x, .x = utm_x, .y = utm_y, .t = date,
              uid = ID,
              crs = 32612)
@@ -189,29 +189,6 @@ win_raster <- lapply(win_iso, function(iso){
     # Now normalize
     x <- raster_locoh / raster::cellStats(raster_locoh, sum)
 })
-```
-
-```{r}
-### Removing IDs that don't have all of the intervals ####
-# Removes any `AnimalID` that doesn't have three intervals in both the `jan` and
-# the `july` list.
-remove_component <- function(list1, list2) {
-
-  bad_id <- full_join(
-    enframe(table(names(list1)), "AnimalID", "list1"),
-    enframe(table(names(list2)), "AnimalID", "list2"),
-    by = "AnimalID") %>%
-    filter(list1 != list2) %>%
-    distinct(AnimalID) %>%
-    pull()
-
-  list(new_list1 = list1[which(!((names(list1) %in% bad_id)))],
-       new_list2 = list2[which(!((names(list2) %in% bad_id)))])
-
-}
-# Creates a single list consisting of both the "cleaned" `jan` and `july` list
-seasons <- remove_component(sum_raster, win_raster)
-win_sum <- remove_component(july, jan)
 ```
 
 ## Setting up input for Calculating EMDs in Environmental Space

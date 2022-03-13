@@ -31,7 +31,7 @@ Calculates the EMD's between the summer and winter UDs. In our example, `seasons
 
 ```
 # Geographical Space
-btwemd_geo <- between_emd(seasons[[1]], seasons[[2]])
+btwemd_geo <- between_emd(sum_raster, win_raster)
 
 # Environmental Space
 btwemd_env <- between_emd(sum_rst, win_rst)
@@ -42,8 +42,8 @@ Calculates the EMDs between the intervals within a single season.
 
 ```
 # Geographical Space
-withsum_geo <- within_emd(seasons[[1]])
-withwin_geo <- within_emd(seasons[[2]])
+withsum_geo <- within_emd(sum_raster)
+withwin_geo <- within_emd(win_raster)
 
 # Environmental Space
 withsum_env <- within_emd(sum_rst)
