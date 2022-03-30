@@ -36,7 +36,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="index.html">trekR</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.0.1.0000</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.0.2.0000</span>
       </span>
     </div>
 
@@ -46,7 +46,7 @@
   <a href="reference/index.html">Reference</a>
 </li>
 <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     Articles
      
     <span class="caret"></span>
@@ -79,20 +79,37 @@
 <div class="section level1">
 <div class="page-header"><h1 id="trekr-migration-classifier">trekR (Migration Classifier)<a class="anchor" aria-label="anchor" href="#trekr-migration-classifier"></a>
 </h1></div>
-<p>The aim of <code>trekR</code> is to automate the classification of individuals, as a migrant or non-migrant, across a continuous scale. I would recommend first looking over the article “Setting Up the Data”” under the articles tab, before looking at how to use the functions in the <code>trekR</code> package shown under “Using the functions in <code>trekR</code>”.</p>
+<p>The aim of <code>trekR</code> is to automate the classification of
+individuals, as a migrant or non-migrant, across a continuous scale. I
+would recommend first looking over the article “Setting Up the Data””
+under the articles tab, before looking at how to use the functions in
+the <code>trekR</code> package shown under “Using the functions in
+<code>trekR</code>”.</p>
 <p>To accomplish this:</p>
 <ol style="list-style-type: decimal">
-<li><p>The collected movement data must first be segmented into the specified time periods (e.g., seasons, months, weeks, days).</p></li>
-<li><p>The segmented time periods are further broken down into specific intervals (e.g., a month can be broken down into weeks or a week can be broken down into days).</p></li>
-<li><p>Fit and rasterize a home range for each interval from step 2. The output from this step should yield at least two utilization distributions (UD) that you will then use in step 4.</p></li>
-<li><p>Calculate the Earth Mover’s Distance (EMD) between two UDs created from step 3. The EMD is expected to be larger for migrants compared to residents.</p></li>
-<li><p>Calculate “EM-Speeds” by dividing each EMD by the time elapsed between the two UDs.</p></li>
-<li><p>Calculate the average within- one specified period from step 1, and between- different periods. The ratios between these two different averages yields a unitless value that will indicate where an individual is on the migratory spectrum.</p></li>
+<li><p>The collected movement data must first be segmented into the
+specified time periods (e.g., seasons, months, weeks, days).</p></li>
+<li><p>The segmented time periods are further broken down into specific
+intervals (e.g., a month can be broken down into weeks or a week can be
+broken down into days).</p></li>
+<li><p>Fit and rasterize a home range for each interval from step 2. The
+output from this step should yield at least two utilization
+distributions (UD) that you will then use in step 4.</p></li>
+<li><p>Calculate the Earth Mover’s Distance (EMD) between two UDs
+created from step 3. The EMD is expected to be larger for migrants
+compared to residents.</p></li>
+<li><p>Calculate “EM-Speeds” by dividing each EMD by the time elapsed
+between the two UDs.</p></li>
+<li><p>Calculate the average within- one specified period from step 1,
+and between- different periods. The ratios between these two different
+averages yields a unitless value that will indicate where an individual
+is on the migratory spectrum.</p></li>
 </ol>
 <div class="section level2">
 <h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
 </h2>
-<p>To install the current development version of <code>trekR</code> use: <code>devtools::install_github("jhnhng/trekR")</code></p>
+<p>To install the current development version of <code>trekR</code> use:
+<code>devtools::install_github("jhnhng/trekR")</code></p>
 </div>
 </div>
   </div>
@@ -134,7 +151,8 @@
 
 <div class="pkgdown">
   <p></p>
-<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.0.</p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a>
+2.0.2.9000.</p>
 </div>
 
       </footer>
