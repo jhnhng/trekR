@@ -10,7 +10,7 @@
 #' @export
 # Calculates the geographical emd within a timeframe
 within_emd <- function(t) {
-  id <- lapply(list(t),\(x)split(unlist(x), names(x)));
+  id <- lapply(list(t),function(x)split(unlist(x), names(x)));
 
   Map(
     function(subl1) {

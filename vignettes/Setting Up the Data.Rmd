@@ -111,14 +111,14 @@ sum_locoh <- lapply(track_list_sum, function(tracks){
     a <- max(dmat)
 
     # Fit LoCoH
-    locoh <- amt::hr_locoh(
+    locoh <- try(amt::hr_locoh(
       x = tracks,
       levels = seq(0.1, 1, by = 0.1),
       keep.data = TRUE,
       n = a,
       type = "a",
       rand_buffer = 1e-05
-    )
+    ))
     
     
 })
@@ -128,14 +128,14 @@ win_locoh <- lapply(track_list_win, function(tracks){
     a <- max(dmat)
 
     # Fit LoCoH
-    locoh <- amt::hr_locoh(
+    locoh <- try(amt::hr_locoh(
       x = tracks,
       levels = seq(0.1, 1, by = 0.1),
       keep.data = TRUE,
       n = a,
       type = "a",
       rand_buffer = 1e-05
-    )
+    ))
     
     
 })
@@ -163,7 +163,7 @@ After creating rasters for each interval, we then subtract all the isopleth valu
 
 ```{r, results = "hide"}
 
-res <- 50
+res <- 250
 
 sum_raster <- lapply(sum_iso, function(iso){
 # Creates template raster
@@ -205,21 +205,29 @@ win_raster <- lapply(win_iso, function(iso){
     x <- raster_locoh / raster::cellStats(raster_locoh, sum)
 })
 
+names(win_raster) <- sapply(jan, function(x) paste(x$ID[1],
+                                            x$year[1], sep = '_'))
+
+names(sum_raster) <- sapply(july, function(x) paste(x$ID[1],
+                                              x$year[1], sep = '_'))
+
 ```
 
 ### Attach attributes to each list of rasters
+We attach attributes to our list of rasters to allow for more flexibility in working with our lists of rasters. 
+
 ```{r, results = "hide"}
 # Add an attribute to hold the attributes of each list element
-attributes(win_raster) <- data.frame(id = sapply(feb, function(x) paste(x$AnimalID[1])),
-                                      interval_start_date = sapply(feb, function(x) paste(x$start[1])),
-                                      year = paste0(sapply(feb, function(x) paste(x$year[1])))
+attributes(win_raster) <- data.frame(id = sapply(jan, function(x) paste(x$ID[1])),
+                                      interval_start_date = sapply(jan, function(x) paste(x$start[1])),
+                                      year = paste0(sapply(jan, function(x) paste(x$year[1])))
 )
 
 # Check the attributes
 attributes(win_raster)
 
 # Add an attribute "tab" to hold the attributes of each list element
-attributes(sum_raster) <- data.frame(id = sapply(july, function(x) paste(x$AnimalID[1])),
+attributes(sum_raster) <- data.frame(id = sapply(july, function(x) paste(x$ID[1])),
                                       interval_start_date = sapply(july, function(x) paste(x$start[1])),
                                       year = paste0(sapply(july, function(x) paste(x$year[1])))
 )
@@ -257,20 +265,38 @@ win_rst <- env_raster_stack(UtahDEM, win_raster)
 
 #### Environmental Covariates with Temporal Variation
 
+For environmental covariates that vary across time (e.g., temperature, snow depth, foraging resources, precipitation, etc.), we first
+assign the file names of which the covariates are housed to `list_names`. In our example, we use Rangeland Analysis Platform (RAP) data in 2013 and 2014 that can be an indicator of forage resources on the landscape. 
+
 ```{r}
 
 list_names <- list.files(path=system.file("extdata", package = "trekR"),
                  pattern=c("RAP","*.tif"), all.files= FALSE,
                  full.names = TRUE) 
 
+basename(list_names)
+
+```
+
+We then read in those files into R as `RasterLayer` objects. For each of those `list` elements in `env_lists` we assign the path names for each of those files. Using the assigned names, we created attributes(metadata) for our list with a `year` column. The `year` column may change depending on the temporal scale of your environmental covariate. For example, if we had environmental covariates that changed daily, we can first aggregate the daily covariates based the intervals. Instead of using `year`, we would then use the start date of the intervals.  
+
+```{r}
+# Rasterize the environmental covariates
 env_list <- lapply(list_names, raster::raster)
+
 names(env_list) <- sapply(list_names, function(x) paste(x))
 
-attributes(env_list) <- data.frame(id = sub("\\.tif", "", basename(names(env_list))),
-                             year = trimws(basename(names(env_list)), whitespace = "_.*"))
+# Uses the name of the environemntal covariate file to assign attributes 
+attributes(env_list) <- data.frame(year = trimws(basename(names(env_list)), 
+                                                 whitespace = "_.*"))
 
-sum_rst <- env_raster_stack(env_list, sum_raster, attribute = "year")
-win_rst <- env_raster_stack(env_list, win_raster, attribute = "year")
+attributes(env_list)
 
+```
 
+We use `env_raster_stack` with the addition of the `attribute` argument to stack environmental covariate layers with our home range rasters. The input for the `attribute` argument should be a attribute component that is the same in both of the `list` objects (i.e., env_list and sum_raster/win_raster) with the same unique values. For example, both `env_list` and `sum_raster`/`win_raster` have a attribute component labelled `year` and both have the same unique values (e.g., 2013 and 2014).   
+
+```{r}
+sum_rst_temporal <- env_raster_stack(env_list, sum_raster, attribute = "year")
+win_rst_temporal <- env_raster_stack(env_list, win_raster, attribute = "year")
 ```
