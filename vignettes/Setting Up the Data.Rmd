@@ -23,14 +23,19 @@ library(tibble)
 ```
 
 ## Setting Up the Data
-The example shown below is one of many ways the data could be processed. The important components required is a `list` object containing home range kernels for each interval that is created for at least one individual. 
 
-For example, for a single individual if I wanted to break a one month period into 10-day intervals I would get a total of three 10-day intervals. These intervals should be in a `list` object, and each element within the `list` should represent a single interval. 
+The example shown below is one of many ways the data could be processed. The important components required is a `list` object containing home range kernels for each interval that is created for at least one individual.
+
+For example, for a single individual if I wanted to break a one month period into 10-day intervals I would get a total of three 10-day intervals. These intervals should be in a `list` object, and each element within the `list` should represent a single interval.
+
+The selected periods to be divided into intervals should be chosen so that they fall between migratory trips and don't overlap them. For example if individuals typically begin their migratory trip in spring and fall, the selected periods should not overlap spring and fall, and should be during the winter and summer seasons.
 
 ### Create Intervals
-We created 10-day intervals for deer in the January and July. We first created a `new` column using the `floor_Date()` function to obtain the 10-day extents within the months. We included the 31st day (if a month had 31 days) in the third 10-day interval to prevent the creation of a 4th 10-day interval with only a single day in it.   
+
+We created 10-day intervals for deer in the January and July. We first created a `new` column using the `floor_Date()` function to obtain the 10-day extents within the months. We included the 31st day (if a month had 31 days) in the third 10-day interval to prevent the creation of a 4th 10-day interval with only a single day in it.
 
 ### Intervals for January
+
 ```{r Jan Intervals}
 jan <- deer %>%
   # Creates a new column assigning the first day in the 10-day interval in which
@@ -49,6 +54,7 @@ jan <- deer %>%
 ```
 
 ### Intervals for July
+
 ```{r July Intervals}
 july <- deer %>%
   # Creates a new column assigning the first day in the 10-day interval in which
@@ -68,15 +74,16 @@ july <- deer %>%
 ```
 
 Elements in the list for one individual in January:
+
 ```{r}
 head(jan[1:3])
 ```
 
-
 ## Create Tracks for Each Interval
+
 Before we estimate LoCoH home range for each of these 10-day intervals, we first create objects of class `track_xyt` using `make_track()` from the `amt` package. This function creates a `track` using the `utm_x` and `utm_y` columns from `jan` and `july`. `lapply()` allows us to apply the specified function across a `list` object (e.g., `jan` and `july`)
 
-``` {r tracks, message = FALSE}
+```{r tracks, message = FALSE}
 track_list_sum <- lapply(july, function(x) {
   amt::make_track(tbl = x, .x = utm_x, .y = utm_y, .t = date,
              uid = ID,
@@ -93,8 +100,9 @@ track_list_win <- lapply(jan, function(x) {
 
 ```
 
-## Creates LoCoHs Using the Tracks 
-Using the `track` created for the `jan` and `july`, we estimate type "a" LoCoH home range using `hr_locoh()` from the `amt` package. If you would like to learn more about the arguments of this function please refer to `?amt::hr_locoh` for more details.  
+## Creates LoCoHs Using the Tracks
+
+Using the `track` created for the `jan` and `july`, we estimate type "a" LoCoH home range using `hr_locoh()` from the `amt` package. If you would like to learn more about the arguments of this function please refer to `?amt::hr_locoh` for more details.
 
 ```{r LoCoHs}
 sum_locoh <- lapply(track_list_sum, function(tracks){
@@ -134,7 +142,9 @@ win_locoh <- lapply(track_list_win, function(tracks){
 ```
 
 ## Creates Isopleths from the LoCoHs
-We then created isopleths from the LoCoH home range estimates using `hr_isopleths()`from the `amt` package. 
+
+We then created isopleths from the LoCoH home range estimates using `hr_isopleths()`from the `amt` package.
+
 ```{r Isopleths}
 sum_iso <- lapply(sum_locoh, function(x){
   amt::hr_isopleths(x)
@@ -145,15 +155,20 @@ win_iso <- lapply(win_locoh, function(x){
 
 ```
 
-## Rasterizes the Isopleths 
-After creating isopleths for each of the intervals, we have to rasterize them. Similar to the the previous functions, we use `lapply()` to apply our function across our `list` object. We first create a template raster with a resolution of "50" (keep in mind that the speed the isopleths are `rasterize()` will be dependent on the specified resolution, with time of processing increasing with smaller resolutions). The projection of the template raster will match that of the specified isopleth.
+## Rasterizes the Isopleths
 
-After creating rasters for each interval, we then subtract all the isopleth values from, then normalize them. 
+After creating isopleths for each of the intervals, we have to rasterize them. Similar to the the previous functions, we use `lapply()` to apply our function across our `list` object. We first select the resolution for that we want for our rasters (`res`). We then create a template raster with a resolution of `res` (keep in mind that the speed the isopleths are `rasterize()` will be dependent on the specified resolution, with time of processing increasing with smaller resolutions). The projection of the template raster will match that of the specified isopleth.
+
+After creating rasters for each interval, we then subtract all the isopleth values from 1, then normalize them.
+
 ```{r, results = "hide"}
+
+res <- 50
+
 sum_raster <- lapply(sum_iso, function(iso){
 # Creates template raster
     template_raster <- raster::raster(iso,
-      resolution = 50, vals = 0,
+      resolution = res, vals = 0,
       crs = sp::CRS(sf::st_crs(iso)[[2]])
     )
     # Rasterizes the isopleth
@@ -173,7 +188,7 @@ sum_raster <- lapply(sum_iso, function(iso){
 win_raster <- lapply(win_iso, function(iso){
 # Creates template raster
     template_raster <- raster::raster(iso,   
-      resolution = 250, vals = 0,
+      resolution = res, vals = 0,
       crs = sp::CRS(sf::st_crs(iso)[[2]])
     )
     # Rasterizes the isopleth
@@ -192,11 +207,15 @@ win_raster <- lapply(win_iso, function(iso){
 ```
 
 ## Setting up input for Calculating EMDs in Environmental Space
-The data set up above have specifically focused on setting up the data for calculating EMDs in geographical space. The code below demonstrates how you can set up the data to calculate the EMDs in environmental space. 
+
+The data set up above have specifically focused on setting up the data for calculating EMDs in geographical space. The code below demonstrates how you can set up the data to calculate the EMDs in environmental space.
 
 ### Creating 'RasterStacks' to calculate EMD and 'EM-Speeds in Environmental Space
 
+#### Environmental Covariates without Temporal Variation
+
 We first import the environmental covariate file (e.g., DEM layer), then we re-project the extent from latitude and longitude to UTMs to match those of the home range rasters.
+
 ```{r}
   #Load raster
   UtahDEM <- raster::raster(system.file("extdata", "Utah_DEM.tif", package = "trekR"))
@@ -204,10 +223,21 @@ We first import the environmental covariate file (e.g., DEM layer), then we re-p
   UtahDEM@extent <- raster::extent(raster::projectExtent(UtahDEM, out_proj))
 ```
 
-The `env_raster_stack()` function takes the environmental covariate raster and resamples it to the home range rasters. It then takes the resampled rasters and the home range rasters and constructs a object with class `RasterStack`. The steps following the creation of these `RasterStacks` is the steps under "Earth Mover's Distance", where the `RasterLayers` objects (i.e., `sum_raster` and `win_raster`) are replaced with the `RasterStack` objects (i.e., `sum_rst` and `win_rst`). 
+The `env_raster_stack()` function takes the environmental covariate raster and resamples it to the home range rasters. It then takes the resampled rasters and the home range rasters and constructs a object with class `RasterStack`. The steps following the creation of these `RasterStacks` is the steps under "Earth Mover's Distance", where the `RasterLayers` objects (i.e., `sum_raster` and `win_raster`) are replaced with the `RasterStack` objects (i.e., `sum_rst` and `win_rst`).
 
 ```{r}
 sum_rst <- env_raster_stack(UtahDEM, sum_raster)
 win_rst <- env_raster_stack(UtahDEM, win_raster)
+
+```
+
+#### Environmental Covariates with Temporal Variation
+
+```{r}
+
+list_names <- list.files(path=system.file("extdata", package = "trekR"),
+                 pattern=c("RAP","*.tif"), all.files= FALSE,
+                 full.names = TRUE) 
+
 
 ```
