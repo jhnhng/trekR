@@ -12,20 +12,17 @@
 # variables
 
 #' @export
-env_raster_stack <- function(env, hrr, attribute = NULL) {
+env_raster_stack <- function(env, hrr, attribute = NULL) { #start
   # If the `attribute`argument is not provided run this:
   if(is.null(attribute)){
-    # Resamples the environmental rasters to the same extend as the locohs
-    rs <- vector("list", length(hrr))
-    for (i in 1:length(hrr)) {
-      rs[[i]] <- raster::resample(env, hrr[[i]])
-    }
 
-    # Create Raster stacks
-    rst <- vector("list", length(hrr))
-    for (i in 1:length(hrr)) {
-      rst[[i]] <- raster::stack(hrr[[i]], rs[[i]])
-    }
+    rst <- lapply(sum_raster,function(x){
+      # Resamples the environmental rasters to the same extend as the locohs
+      rs <- raster::resample(env, x)
+      # Create Raster stacks
+      rst <- raster::stack(x, rs)
+    })
+
   }else{ # If an value is provided for the `attribute` argument run this:
 
     multi_env <- do.call(c, Map(function(x, y)
@@ -36,6 +33,7 @@ env_raster_stack <- function(env, hrr, attribute = NULL) {
       split(win_raster, attr(hrr, attribute)),
       env
     ))
+
   }
 
   if(is.null(attribute)){
@@ -44,5 +42,4 @@ env_raster_stack <- function(env, hrr, attribute = NULL) {
     return(multi_env)
   }
 
-
-}
+} # end
