@@ -16,7 +16,7 @@ env_raster_stack <- function(env, hrr, attribute = NULL) { #start
   # If the `attribute`argument is not provided run this:
   if(is.null(attribute)){
 
-    rst <- lapply(sum_raster,function(x){
+    rst <- lapply(hrr,function(x){
       # Resamples the environmental rasters to the same extend as the locohs
       rs <- raster::resample(env, x)
       # Create Raster stacks
