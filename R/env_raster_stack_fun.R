@@ -30,7 +30,7 @@ env_raster_stack <- function(env, hrr, attribute = NULL) { #start
         rs <- raster::resample(y, z)
         rst <- raster::stack(z, rs)
       }),
-      split(win_raster, attr(hrr, attribute)),
+      split(hrr, attr(hrr, attribute)),
       env
     ))
 
