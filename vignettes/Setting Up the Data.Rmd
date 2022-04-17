@@ -48,7 +48,6 @@ jan <- deer %>%
   group_by(ID) %>% 
   mutate(start = if_else(day(start) == 31, start - days(10), start)) %>% 
   group_by(start, .add = TRUE) %>%
-  # Filter the data by the season based on the `season_categ` column
   filter(month == "1") %>% 
   group_split()
 ```
@@ -67,7 +66,6 @@ july <- deer %>%
   group_by(ID) %>% 
   mutate(start = if_else(day(start) == 31, start - days(10), start)) %>% 
   group_by(start, .add = TRUE) %>%
-  # Filter the data by the season based on the `season_categ` column
   filter(month == "7") %>% 
   group_split()
 
