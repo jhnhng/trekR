@@ -34,6 +34,10 @@ emspeeds <- function(t1, t2, emd) {
   lstMat <- purrr::map2(split(t1, names(t1)), split(t2, names(t2)), f1)
   es <- purrr::map2(emd, lstMat, `/`)
 
+   # # Take the absolute value of each value in the matrix to remove
+   # # negative numbers
+  es <- lapply(es, abs)
+
   # All NAs are converted to 0
   if (all(!is.na(es))) {
     es <- lapply(es, function(x) {
@@ -41,8 +45,6 @@ emspeeds <- function(t1, t2, emd) {
       x
     })
 
-    # # Take the absolute value of each value in the matrix to remove
-    # # negative numbers
-    es <- lapply(es, abs)
+
   }
 }
