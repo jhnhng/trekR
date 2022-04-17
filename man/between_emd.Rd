@@ -4,15 +4,13 @@
 \alias{between_emd}
 \title{Calculates the between seasonal range Earth-mover's distance (EMD)}
 \usage{
-between_emd(t1, t2, nintervals)
+between_emd(t1, t2)
 }
 \arguments{
 \item{t1}{A list of rasters for each interval for a given range.}
 
 \item{t2}{A second list of raster for each interval for a given range that
 is being compared with the first list of rasters (t1).}
-
-\item{nintervals}{The amount of intervals that the rasters are broken up into.}
 }
 \value{
 The output is a list of matrices that contain the EMDs for each

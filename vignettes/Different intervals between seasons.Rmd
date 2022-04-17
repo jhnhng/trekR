@@ -2,7 +2,7 @@
 title: "Different intervals between seasons"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Setting Up the Data}
+  %\VignetteIndexEntry{Different intervals between seasons}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -48,7 +48,7 @@ jan <- deer %>%
 Let's remove some list elements from the `jan` interval so that we have 
 different number of intervals between `jan` and `july`. 
 ```{r}
-jan <- jan[[-c(17,18)]]
+jan <- jan[-c(17,18)]
 ```
 
 ### Intervals for July

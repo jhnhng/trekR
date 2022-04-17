@@ -4,7 +4,7 @@
 \alias{within_emd}
 \title{Calculates the Earth-Mover's Distance (EMD) within the same range}
 \usage{
-within_emd(t, nintervals)
+within_emd(t)
 }
 \arguments{
 \item{t}{List of rasters containing the raster for each period within the}
