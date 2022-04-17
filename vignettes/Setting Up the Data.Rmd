@@ -294,6 +294,7 @@ attributes(env_list)
 We use `env_raster_stack` with the addition of the `attribute` argument to stack environmental covariate layers with our home range rasters. The input for the `attribute` argument should be a attribute component that is the same in both of the `list` objects (i.e., env_list and sum_raster/win_raster) with the same unique values. For example, both `env_list` and `sum_raster`/`win_raster` have a attribute component labelled `year` and both have the same unique values (e.g., 2013 and 2014).
 
 NOTE: Currently this feature assumes that only environmental layers relevant to `sum_raster` or `win_raster` are being used and are in the same folder(i.e., excluding any that are not present in `sum_raster` and/or `win_raster`.)
+
 ```{r}
 sum_rst_temporal <- env_raster_stack(env_list, sum_raster, attribute = "year")
 win_rst_temporal <- env_raster_stack(env_list, win_raster, attribute = "year")
