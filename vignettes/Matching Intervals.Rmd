@@ -90,6 +90,6 @@ Using the `match_intervals` function we can match the number of intervals in
 `july` to those in `jan`. In this case, the first argument `list1` is the 
 reference list for the second argument `list2`. 
 ```{r Matching Intervals}
-july <- match_intervals(list1 = feb, list2 = july)
+july <- match_intervals(list1 = jan, list2 = july)
 
 ```
