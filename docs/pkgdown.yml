@@ -2,7 +2,11 @@ pandoc: 2.17.1.1
 pkgdown: 2.0.2.9000
 pkgdown_sha: 98d5a5c735eb244cb98b2e6bab1d54bb27c0af95
 articles:
-  Setting Up the Data: Setting Up the Data.html
-  Using-trekR: Using-trekR.html
-last_built: 2022-03-30T21:11Z
+  01 Setting Up the Data: 01 Setting Up the Data.html
+  02 Different intervals between seasons: 02 Different intervals between seasons.html
+  03 Using-trekR: 03 Using-trekR.html
+last_built: 2022-04-17T21:36Z
+urls:
+  reference: https://jhnhng.github.io/trekR/reference
+  article: https://jhnhng.github.io/trekR/articles
 
