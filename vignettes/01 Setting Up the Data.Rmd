@@ -16,10 +16,10 @@ knitr::opts_chunk$set(
 ```
 
 ```{r message = FALSE}
-require(trekR)
-require(lubridate)
-require(dplyr)
-require(tibble)
+library(trekR)
+library(lubridate)
+library(dplyr)
+library(tibble)
 ```
 
 ## Setting Up the Data
