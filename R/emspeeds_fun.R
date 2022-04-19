@@ -39,12 +39,9 @@ emspeeds <- function(t1, t2, emd) {
   es <- lapply(es, abs)
 
   # All NAs are converted to 0
-  if (all(!is.na(es))) {
-    es <- lapply(es, function(x) {
+  es <- lapply(es, function(x) {
       x[is.na(x)] <- 0
       x
     })
 
-
-  }
 }
